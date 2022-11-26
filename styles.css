@@ -13,11 +13,11 @@ a, a:hover, a:visited {
 }
 
 a {
-    border-bottom: 2px solid #31ffd5;
+    border-bottom: 2px solid #6494dc;
 }
 
 a:hover {
-    background:#31ffd5;
+    background:#6494dc;
 }
 
 .main-wrapper {
@@ -42,8 +42,9 @@ a:hover {
 
 .main-header h1 {
     margin: 0;
-    background: #31ffd5;
+    background: #6494dc;
     padding: 0.5em 1em;
+    color: #FFF
 }
 
 .main-header a {
