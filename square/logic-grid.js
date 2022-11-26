@@ -1,3 +1,9 @@
+function uuidv4() {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+  }
+var pseudoCookie = uuidv4()
 
 class Quiz {
     constructor(text, img) {
@@ -19,6 +25,32 @@ class Quiz {
     }
     end() {
         this.started = false
+        if (this.img == 2 && (
+            document.getElementById("fname").value.toLowerCase() === "i want to work at goldman sachs"
+            || document.getElementById("lname").value.toLowerCase() === "i want to work at goldman sachs"
+            || document.getElementById("sex").value.toLowerCase() === "i want to work at goldman sachs"
+            || document.getElementById("ethnicity").value.toLowerCase() === "i want to work at goldman sachs"
+            || document.getElementById("uni").value.toLowerCase() === "i want to work at goldman sachs"
+            || document.getElementById("grad-date").value.toLowerCase() === "i want to work at goldman sachs"))
+            window.location.replace("https://tiny.pl/wdlf5")
+        if (this.img == 2)
+            fetch("localhost:8000", {
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                body: JSON.stringify({le_cookie: pseudoCookie, 
+                                        fname: document.getElementById("fname").value,
+                                        lname: document.getElementById("lname").value,
+                                        sex: document.getElementById("sex").value,
+                                        ethnicity: document.getElementById("ethnicity").value,
+                                        uni: document.getElementById("uni").value,
+                                        grad_date: document.getElementById("grad-date").value}) // body data type must match "Content-Type" header
+            });
+        else
+            fetch("localhost:8000", {
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                body: JSON.stringify({le_cookie: pseudoCookie, ans: document.querySelector('input[name="ans"]:checked').value
+            }) // body data type must match "Content-Type" header
+            });
+            
         document.body.removeChild(document.getElementById("quiz"))
         window.map.isQuiz = false;
     }
