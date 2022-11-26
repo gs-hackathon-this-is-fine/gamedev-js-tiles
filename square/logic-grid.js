@@ -11,38 +11,41 @@ class Quiz {
 
 }
 
+function Texture(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+Texture.prototype.pos = function () {
+    return {
+        x: this.x,
+        y: this.y
+    }
+}
+
+var floor = new Texture(12, 4);
+var wall = new Texture(7, 5);
+var printer = new Texture(10, 24);
+var sky = new Texture(7, 5);
+var glass = new Texture(2, 27);
+
+var mapper = {
+    1: floor,
+    2: wall,
+    3: printer,
+    4: sky,
+    5: glass,
+}
+
+var blockers = [
+    2, 5,
+]
+
 var map = {
-    cols: 12,
-    rows: 12,
-    tsize: 64,
-    layers: [[
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-        3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
-        3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
-        3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
-        3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
-        3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 3,
-        3, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 3,
-        3, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 3,
-        3, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3,
-        3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3,
-        3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3,
-        3, 3, 3, 1, 1, 2, 3, 3, 3, 3, 3, 3
-    ], [
-        4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4,
-        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
-        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
-        4, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 4,
-        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
-        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
-        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
-        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
-        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
-        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
-        4, 4, 4, 0, 5, 4, 4, 4, 4, 4, 4, 4,
-        4, 4, 4, 0, 0, 3, 3, 3, 3, 3, 3, 3
-    ]],
-    quizes: {"3,3": new Quiz()},
+    cols: 100,
+    rows: 100,
+    tsize: 48,
+    layers: [layer0, layer1],
     getTile: function (layer, col, row) {
         return this.layers[layer][row * map.cols + col];
     },
@@ -59,11 +62,11 @@ var map = {
         // loop through all layers and return TRUE if any tile is solid
         return this.layers.reduce(function (res, layer, index) {
             var tile = this.getTile(index, col, row);
-            var isSolid = tile === 3 || tile === 5;
+            var isSolid = tile in blockers;
             return res || isSolid;
         }.bind(this), false);
     },
-    
+
     getCol: function (x) {
         return Math.floor(x / this.tsize);
     },
@@ -189,7 +192,8 @@ Hero.prototype._collide = function (dirx, diry) {
 
 Game.load = function () {
     return [
-        Loader.loadImage('tiles', '../assets/tiles.png'),
+        Loader.loadImage('_tiles', '../assets/tiles.png'),
+        Loader.loadImage('tiles', '../assets/Modern_Office_Revamped/3_Modern_Office_Shadowless/Modern_Office_Shadowless_48x48.png'),
         Loader.loadImage('hero', '../assets/character.png')
     ];
 };
@@ -200,8 +204,8 @@ Game.init = function () {
         [Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN]);
     this.tileAtlas = Loader.getImage('tiles');
 
-    this.hero = new Hero(map, 160, 160);
-    this.camera = new Camera(map, 960, 600);
+    this.hero = new Hero(map, 1840, 1840);
+    this.camera = new Camera(map, 1024, 1024);
     this.camera.follow(this.hero);
 };
 
@@ -234,10 +238,18 @@ Game._drawLayer = function (layer) {
             var x = (c - startCol) * map.tsize + offsetX;
             var y = (r - startRow) * map.tsize + offsetY;
             if (tile !== 0) { // 0 => empty tile
+                let X = (tile - 1) * map.tsize;
+                let Y = 0;
+                if (tile in mapper) {
+                    var pos = mapper[tile].pos();
+                    X = pos.x * map.tsize;
+                    Y = pos.y * map.tsize;
+                }
+
                 this.ctx.drawImage(
                     this.tileAtlas, // image
-                    (tile - 1) * map.tsize, // source x
-                    0, // source y
+                    X, // source x
+                    Y, // source y
                     map.tsize, // source width
                     map.tsize, // source height
                     Math.round(x),  // target x
@@ -273,4 +285,6 @@ Game.render = function () {
 
     // draw map top layer
     this._drawLayer(1);
+
+    // this._drawGrid();
 };
