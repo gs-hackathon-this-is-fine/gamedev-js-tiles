@@ -226,6 +226,7 @@ Game.load = function () {
         Loader.loadImage('tiles', '../assets/Modern_Office_Revamped/3_Modern_Office_Shadowless/Modern_Office_Shadowless_48x48.png'),
         Loader.loadImage('hero', '../assets/intern1.png'),
         Loader.loadImage('gryka', '../assets/gryka.png'),
+        Loader.loadImage('wiki', '../assets/wiki.png'),
     ];
 };
 
@@ -243,6 +244,12 @@ Game.init = function () {
         x: 20,
         y: 20,
         image: Loader.getImage('gryka'),
+    }
+
+    this.wiki = {
+        x: 30,
+        y: 30,
+        image: Loader.getImage('wiki'),
     }
 };
 
