@@ -224,7 +224,8 @@ Game.load = function () {
     return [
         Loader.loadImage('_tiles', '../assets/tiles.png'),
         Loader.loadImage('tiles', '../assets/Modern_Office_Revamped/3_Modern_Office_Shadowless/Modern_Office_Shadowless_48x48.png'),
-        Loader.loadImage('hero', '../assets/intern1.png')
+        Loader.loadImage('hero', '../assets/intern1.png'),
+        Loader.loadImage('gryka', '../assets/gryka.png'),
     ];
 };
 
@@ -237,6 +238,12 @@ Game.init = function () {
     this.camera = new Camera(map, 1024, 1024);
     this.camera.follow(this.hero);
     Mouse.listenForEvents()
+
+    this.gryka = {
+        x: 20,
+        y: 20,
+        image: Loader.getImage('gryka'),
+    }
 };
 
 Game.update = function (delta) {
@@ -249,7 +256,7 @@ Game.update = function (delta) {
     var dirx = 0;
     var diry = 0;
     var offset = Mouse.getOffset(this.hero.screenX, this.hero.screenY )
-    console.log(this.hero.map.isQuiz)
+    // console.log(this.hero.map.isQuiz)
     if (this.hero.map.isQuiz || offset == null || (Math.abs(offset.x) < this.hero.width / 4 && Math.abs(offset.y) < this.hero.height / 4)) {
         this.camera.update();
         return
@@ -310,7 +317,6 @@ Game._drawLayer = function (layer) {
     }
 };
 
-
 Game.render = function () {
     // draw map background layer
     this._drawLayer(0);
@@ -322,6 +328,12 @@ Game.render = function () {
         this.hero.image,
         this.hero.screenX - this.hero.width / 2,
         this.hero.screenY - this.hero.height / 2);
+
+    this.ctx.drawImage(
+        this.gryka.image,
+        this.gryka.x * map.tsize,
+        this.gryka.y * map.tsize,
+    )
 
     this._drawLayer(2);
     // draw map top layer
