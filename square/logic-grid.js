@@ -18,9 +18,6 @@ class Quiz {
         document.body.removeChild(document.getElementById("quiz"))
         window.map.isQuiz = false;
     }
-    draw(ctx, x, y) {
-        ctx.fillRect(x,y,100,100)
-    }
 
 }
 
@@ -83,7 +80,7 @@ var map = {
             this.isQuiz = true;
         }
     },
-    quizes: {"32,32": new Quiz(quiz)},
+    quizes: {"31,32": new Quiz(quizes[0])},
     isSolidTileAtXY: function (x, y) {
         var col = Math.floor(x / this.tsize);
         var row = Math.floor(y / this.tsize);
@@ -235,7 +232,7 @@ Game.init = function () {
     this.tileAtlas = Loader.getImage('tiles');
 
     this.hero = new Hero(map, 25 * 48, 25 * 48);
-    this.camera = new Camera(map, 1024, 1024);
+    this.camera = new Camera(map, 512, 512);
     this.camera.follow(this.hero);
     Mouse.listenForEvents()
 
@@ -269,9 +266,9 @@ Game.update = function (delta) {
 
 Game._drawLayer = function (layer) {
     var startCol = Math.floor(this.camera.x / map.tsize) - 1;
-    var endCol = startCol + (this.camera.width / map.tsize) + 1;
+    var endCol = startCol + (this.camera.width / map.tsize) + 2;
     var startRow = Math.floor(this.camera.y / map.tsize) - 1;
-    var endRow = startRow + (this.camera.height / map.tsize) + 1;
+    var endRow = startRow + (this.camera.height / map.tsize) + 2;
     var offsetX = -this.camera.x + startCol * map.tsize;
     var offsetY = -this.camera.y + startRow * map.tsize;
 
@@ -311,7 +308,11 @@ Game._drawLayer = function (layer) {
             var x = (c - startCol) * map.tsize + offsetX;
             var y = (r - startRow) * map.tsize + offsetY;
             if (quiz !== null && quiz !== undefined) {
-                quiz.draw(this.ctx, x, y)
+                this.ctx.drawImage(
+                    this.gryka.image, // image
+                    Math.round(x),  // target x
+                    Math.round(y)
+                );
             }
         }
     }
