@@ -6,7 +6,6 @@ class Quiz {
 
     }
     draw(ctx, x, y) {
-        console.log("dsdfsaadsf")
         ctx.fillRect(x,y,100,100)
     }
 
@@ -78,9 +77,7 @@ var map = {
         return row * this.tsize;
     },
     getQuizAt: function (column, row) {
-        if ("3,3" == column +',' + row)
-            console.log('dfsadfa')
-        this.quizes[column +',' + row];
+        return this.quizes[column +',' + row];
     }
 };
 
@@ -257,8 +254,7 @@ Game._drawLayer = function (layer) {
             var x = (c - startCol) * map.tsize + offsetX;
             var y = (r - startRow) * map.tsize + offsetY;
             if (quiz !== null && quiz !== undefined) {
-                console.log(c + ',' + r) // 0 => empty tile
-                quiz.draw(this.ctx, c, r)
+                quiz.draw(this.ctx, x, y)
             }
         }
     }
