@@ -74,6 +74,43 @@ Keyboard.isDown = function (keyCode) {
 };
 
 //
+// Mouse handler
+//
+
+var Mouse = {};
+
+Mouse._position = null;
+
+
+Mouse.listenForEvents = function () {
+    document.getElementById("demo").addEventListener('mousedown', this._mouseDown.bind(this));
+    document.getElementById("demo").addEventListener('mouseup', this._mouseUp.bind(this));
+    document.getElementById("demo").addEventListener('mousemove', this._mouseDrag.bind(this));
+    document.getElementById("demo").addEventListener('mouseout', this._mouseUp.bind(this));
+}
+
+Mouse._mouseDrag = function (event) {
+    if (Mouse._position != null) {
+        Mouse._position = {x: event.offsetX, y: event.offsetY};
+    }
+};
+
+Mouse._mouseDown = function (event) {
+    Mouse._position = {x: event.offsetX, y: event.offsetY};
+};
+
+Mouse._mouseUp = function (event) {
+    Mouse._position = null;
+};
+
+Mouse.getOffset = function (posX, posY) {
+    if (Mouse._position == null)
+        return null;
+    return {x: Math.round(Mouse._position.x - posX), y: Math.round(Mouse._position.y - posY)}
+};
+
+
+//
 // Game object
 //
 

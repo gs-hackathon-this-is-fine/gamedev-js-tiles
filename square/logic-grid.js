@@ -1,3 +1,17 @@
+class Quiz {
+    start() {
+
+    }
+    end() {
+
+    }
+    draw(ctx, x, y) {
+        console.log("dsdfsaadsf")
+        ctx.fillRect(x,y,100,100)
+    }
+
+}
+
 var map = {
     cols: 12,
     rows: 12,
@@ -29,8 +43,14 @@ var map = {
         4, 4, 4, 0, 5, 4, 4, 4, 4, 4, 4, 4,
         4, 4, 4, 0, 0, 3, 3, 3, 3, 3, 3, 3
     ]],
+    quizes: {"3,3": new Quiz()},
     getTile: function (layer, col, row) {
         return this.layers[layer][row * map.cols + col];
+    },
+    trystartingQuiz(x, y) {
+        if ((x / this.tsize, y / this.tsize) in quests) {
+            this.quests[(x / this.tsize, y / this.tsize)].start(x, y)
+        }
     },
     isSolidTileAtXY: function (x, y) {
         var col = Math.floor(x / this.tsize);
@@ -44,6 +64,7 @@ var map = {
             return res || isSolid;
         }.bind(this), false);
     },
+    
     getCol: function (x) {
         return Math.floor(x / this.tsize);
     },
@@ -55,6 +76,11 @@ var map = {
     },
     getY: function (row) {
         return row * this.tsize;
+    },
+    getQuizAt: function (column, row) {
+        if ("3,3" == column +',' + row)
+            console.log('dfsadfa')
+        this.quizes[column +',' + row];
     }
 };
 
@@ -115,11 +141,12 @@ Hero.SPEED = 256; // pixels per second
 
 Hero.prototype.move = function (delta, dirx, diry) {
     // move hero
-    this.x += dirx * Hero.SPEED * delta;
     this.y += diry * Hero.SPEED * delta;
+    this._collide(0, diry);
 
+    this.x += dirx * Hero.SPEED * delta;
     // check if we walked into a non-walkable tile
-    this._collide(dirx, diry);
+    this._collide(dirx, 0);
 
     // clamp values
     var maxX = this.map.cols * this.map.tsize;
@@ -145,19 +172,19 @@ Hero.prototype._collide = function (dirx, diry) {
         this.map.isSolidTileAtXY(left, bottom);
     if (!collision) { return; }
 
-    if (diry > 0) {
+    if (diry > 0  && ( this.map.isSolidTileAtXY(left, bottom) || this.map.isSolidTileAtXY(right, bottom) )) {
         row = this.map.getRow(bottom);
         this.y = -this.height / 2 + this.map.getY(row);
     }
-    else if (diry < 0) {
+    if (diry < 0 && ( this.map.isSolidTileAtXY(left, top) || this.map.isSolidTileAtXY(right, top) )) {
         row = this.map.getRow(top);
         this.y = this.height / 2 + this.map.getY(row + 1);
     }
-    else if (dirx > 0) {
+    if (dirx > 0 && ( this.map.isSolidTileAtXY(right, top) || this.map.isSolidTileAtXY(right, bottom) )) {
         col = this.map.getCol(right);
         this.x = -this.width / 2 + this.map.getX(col);
     }
-    else if (dirx < 0) {
+    if (dirx < 0 && ( this.map.isSolidTileAtXY(left, top) || this.map.isSolidTileAtXY(left, bottom) )) {
         col = this.map.getCol(left);
         this.x = this.width / 2 + this.map.getX(col + 1);
     }
@@ -171,12 +198,13 @@ Game.load = function () {
 };
 
 Game.init = function () {
+    Mouse.listenForEvents()
     Keyboard.listenForEvents(
         [Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN]);
     this.tileAtlas = Loader.getImage('tiles');
 
     this.hero = new Hero(map, 160, 160);
-    this.camera = new Camera(map, 512, 512);
+    this.camera = new Camera(map, 960, 600);
     this.camera.follow(this.hero);
 };
 
@@ -184,12 +212,14 @@ Game.update = function (delta) {
     // handle hero movement with arrow keys
     var dirx = 0;
     var diry = 0;
-    if (Keyboard.isDown(Keyboard.LEFT)) { dirx = -1; }
-    else if (Keyboard.isDown(Keyboard.RIGHT)) { dirx = 1; }
-    else if (Keyboard.isDown(Keyboard.UP)) { diry = -1; }
-    else if (Keyboard.isDown(Keyboard.DOWN)) { diry = 1; }
-
-    this.hero.move(delta, dirx, diry);
+    var offset = Mouse.getOffset(this.hero.screenX, this.hero.screenY )
+    if (offset == null || (Math.abs(offset.x) < this.hero.width / 4 && Math.abs(offset.y) < this.hero.height / 4)) {
+        this.camera.update();
+        return
+    }
+    var len = Math.sqrt(offset.x * offset.x + offset.y * offset.y)
+    offset = { x: 1.5 * offset.x / len, y: 1.5 *  offset.y / len}
+    this.hero.move(delta, offset.x, offset.y);
     this.camera.update();
 };
 
@@ -221,29 +251,19 @@ Game._drawLayer = function (layer) {
             }
         }
     }
+    for (var c = startCol; c <= endCol; c++) {
+        for (var r = startRow; r <= endRow; r++) {
+            var quiz = map.getQuizAt(c, r);
+            var x = (c - startCol) * map.tsize + offsetX;
+            var y = (r - startRow) * map.tsize + offsetY;
+            if (quiz !== null && quiz !== undefined) {
+                console.log(c + ',' + r) // 0 => empty tile
+                quiz.draw(this.ctx, c, r)
+            }
+        }
+    }
 };
 
-Game._drawGrid = function () {
-        var width = map.cols * map.tsize;
-    var height = map.rows * map.tsize;
-    var x, y;
-    for (var r = 0; r < map.rows; r++) {
-        x = - this.camera.x;
-        y = r * map.tsize - this.camera.y;
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y);
-        this.ctx.lineTo(width, y);
-        this.ctx.stroke();
-    }
-    for (var c = 0; c < map.cols; c++) {
-        x = c * map.tsize - this.camera.x;
-        y = - this.camera.y;
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y);
-        this.ctx.lineTo(x, height);
-        this.ctx.stroke();
-    }
-};
 
 Game.render = function () {
     // draw map background layer
@@ -257,6 +277,4 @@ Game.render = function () {
 
     // draw map top layer
     this._drawLayer(1);
-
-    this._drawGrid();
 };
