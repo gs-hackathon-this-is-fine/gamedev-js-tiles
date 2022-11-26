@@ -35,6 +35,13 @@ var wall = new Texture(7, 5);
 var printer = new Texture(10, 24);
 var sky = new Texture(7, 5);
 var glass = new Texture(2, 27);
+var desk1 = new Texture(6, 18);
+var desk2 = new Texture(7, 18);
+var desk3 = new Texture(6, 19);
+var desk4 = new Texture(7, 19);
+var flower1 = new Texture(6, 11);
+var flower2 = new Texture(6, 10);
+var comp = new Texture(12, 35);
 
 var mapper = {
     1: floor,
@@ -42,17 +49,24 @@ var mapper = {
     3: printer,
     4: sky,
     5: glass,
+    6: desk1,
+    7: desk2,
+    8: desk3,
+    9: desk4,
+    10: flower1,
+    11: flower2,
+    12: comp,
 }
 
 var blockers = [
-    2, 5,
+    2, 5, 6, 7, 11,
 ]
 
 var map = {
-    cols: 100,
-    rows: 100,
+    cols: 50,
+    rows: 50,
     tsize: 48,
-    layers: [layer0, layer1],
+    layers: [layer0, layer1, layer2],
     getTile: function (layer, col, row) {
         return this.layers[layer][row * map.cols + col];
     },
@@ -212,7 +226,7 @@ Game.init = function () {
         [Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN]);
     this.tileAtlas = Loader.getImage('tiles');
 
-    this.hero = new Hero(map, 1840, 1840);
+    this.hero = new Hero(map, 25 * 48, 25 * 48);
     this.camera = new Camera(map, 1024, 1024);
     this.camera.follow(this.hero);
 };
@@ -253,6 +267,8 @@ Game._drawLayer = function (layer) {
                     X = pos.x * map.tsize;
                     Y = pos.y * map.tsize;
                 }
+                let delta = 0;
+                if (layer === 2) delta = 48 / 2;
 
                 this.ctx.drawImage(
                     this.tileAtlas, // image
@@ -260,8 +276,8 @@ Game._drawLayer = function (layer) {
                     Y, // source y
                     map.tsize, // source width
                     map.tsize, // source height
-                    Math.round(x),  // target x
-                    Math.round(y), // target y
+                    Math.round(x) + delta,  // target x
+                    Math.round(y) + delta, // target y
                     map.tsize, // target width
                     map.tsize // target height
                 );
@@ -285,14 +301,16 @@ Game.render = function () {
     // draw map background layer
     this._drawLayer(0);
 
+    this._drawLayer(1);
     // draw main character
+
     this.ctx.drawImage(
         this.hero.image,
         this.hero.screenX - this.hero.width / 2,
         this.hero.screenY - this.hero.height / 2);
 
+    this._drawLayer(2);
     // draw map top layer
-    this._drawLayer(1);
 
     // this._drawGrid();
 };
