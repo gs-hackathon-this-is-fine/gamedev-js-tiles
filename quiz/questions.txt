@@ -1,27 +1,52 @@
-Q::Czy istnieje zbiór nieprzeliczalny mocy mniejszej niż moc zbioru liczb rzeczywistych? Zakładamy aksjomatykę ZFC.
-N::Tak
-N::Nie
-Y::Nie wynika z aksjomatów.
+Q::Does there exist an uncountable set with cardinality smaller than that of the set of all real numbers (in ZFC)?
+N::Yes
+N::No
+Y::Does not follow from axioms.
 
-Q::Ile jest a) rosnących b) niemalejących funkcji z \(\mathbb N\) do \(\mathbb N\)?
+Q::How many a) non-increasing b) non-decreasing functions form \(\mathbb N\) to \(\mathbb N\)?
 N::a) \(\aleph_0\) b) \(\aleph_0\)
 Y::a) \(\aleph_0\) b) \(\mathfrak c\)
 N::a) \(\mathfrak c\) b) \(\aleph_0\)
 N::a) \(\mathfrak c\) b) \(\mathfrak c\)
 
-Q::Niech \(f : \mathbb R \to \mathbb R\) będzie określona wzorem \(f(x) = xe^{-x^4}\) Ile wynosi \(\int_{0}^\infty f(x)\)?
+Q::Let \(f : \mathbb R \to \mathbb R\) be defined by \(f(x) = xe^{-x^4}\). What is the value \(\int_{0}^\infty f(x)\)?
 N::\(\sqrt{e}\)
 N::\(\frac{\sqrt{e}}{4}\)
 N::\(\sqrt{\pi}\)
 Y::\(\frac{\sqrt{\pi}}{4}\)
 
-Q::Czym jest big endian?
+Q::What is the cost of QR decomposition of a Hessenberg matrix of size \(N \times N\)?
+N::\(O(1)\)
+N::\(O(N)\)
+Y::\(O(N^2)\)
+N::\(O(N^3)\)
+
+Q::What is big endian?
 N::Indianinem
 N::Amerykaninem
 Y::
 N::
 
-Q::Jaki będzie wynik wywołania tego programu w C?
+Q::What is the result of the following code in C?
+
+int x = 54;
+
+void f() {
+    if (101 <= x) {
+        x -= 10;
+    }
+    else {
+        x += 11;
+        f();
+        f();
+    }
+}
+
+int main() {
+    f();
+    printf("%d", x);
+    return 0;
+}
 N::21
 N::37
 N::42

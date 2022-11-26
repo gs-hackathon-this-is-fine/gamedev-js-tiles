@@ -34,24 +34,13 @@ while True:
 
 file.close()
 
+htmls = []
+
 for i in range(len(questions)):
     question = questions[i]
     ans = answers[i]
-    html = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async
-            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-    </script>
-</head>
-<body>
-{question}
+    html = f"{question}"
 
-<form>
-
-"""
     for j in range(len(ans)):
         (b, a) = ans[j]
         html += f"""
@@ -61,13 +50,12 @@ for i in range(len(questions)):
 
     html += """
     <button type="submit">Zatwierdź</button>
-</form>
-</body>
-</html>"""
+</form>"""
+    htmls += [html]
 
-    file = open(f"quiz{i}.html", "w")
-    file.write(html)
-    file.close()
+file = open(f"quiz.js", "w")
+file.write("let quizes = " + str(htmls))
+file.close()
 
 
 
