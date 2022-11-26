@@ -1,7 +1,11 @@
 
 class Quiz {
-    constructor(text, map) {
+    constructor(text, img) {
         this.text = text
+        this.img = img
+    }
+    getImg() {
+        return this.img;
     }
     start() {
         if (this.started)
@@ -18,11 +22,9 @@ class Quiz {
         document.body.removeChild(document.getElementById("quiz"))
         window.map.isQuiz = false;
     }
-    draw(ctx, x, y) {
-        ctx.fillRect(x,y,100,100)
-    }
 
 }
+
 
 function Texture(x, y) {
     this.x = x;
@@ -83,7 +85,7 @@ var map = {
             this.isQuiz = true;
         }
     },
-    quizes: {"32,32": new Quiz(quiz)},
+    quizes: {"25,21": new Quiz(registration, 2),"31,32": new Quiz(quizes[0], 1), "12,34": new Quiz(quizes[1], 1),"27,12": new Quiz(quizes[2], 1),"15,11": new Quiz(quizes[3], 1)},
     isSolidTileAtXY: function (x, y) {
         var col = Math.floor(x / this.tsize);
         var row = Math.floor(y / this.tsize);
@@ -224,7 +226,9 @@ Game.load = function () {
     return [
         Loader.loadImage('_tiles', '../assets/tiles.png'),
         Loader.loadImage('tiles', '../assets/Modern_Office_Revamped/3_Modern_Office_Shadowless/Modern_Office_Shadowless_48x48.png'),
-        Loader.loadImage('hero', '../assets/intern1.png')
+        Loader.loadImage('hero', '../assets/intern1.png'),
+        Loader.loadImage('gryka', '../assets/gryka.png'),
+        Loader.loadImage('wiki', '../assets/wiki.png'),
     ];
 };
 
@@ -234,9 +238,21 @@ Game.init = function () {
     this.tileAtlas = Loader.getImage('tiles');
 
     this.hero = new Hero(map, 25 * 48, 25 * 48);
-    this.camera = new Camera(map, 1024, 1024);
+    this.camera = new Camera(map, 512, 512);
     this.camera.follow(this.hero);
     Mouse.listenForEvents()
+
+    this.gryka = {
+        x: 20,
+        y: 20,
+        image: Loader.getImage('gryka'),
+    }
+
+    this.wiki = {
+        x: 30,
+        y: 30,
+        image: Loader.getImage('wiki'),
+    }
 };
 
 Game.update = function (delta) {
@@ -249,7 +265,7 @@ Game.update = function (delta) {
     var dirx = 0;
     var diry = 0;
     var offset = Mouse.getOffset(this.hero.screenX, this.hero.screenY )
-    console.log(this.hero.map.isQuiz)
+    // console.log(this.hero.map.isQuiz)
     if (this.hero.map.isQuiz || offset == null || (Math.abs(offset.x) < this.hero.width / 4 && Math.abs(offset.y) < this.hero.height / 4)) {
         this.camera.update();
         return
@@ -262,9 +278,9 @@ Game.update = function (delta) {
 
 Game._drawLayer = function (layer) {
     var startCol = Math.floor(this.camera.x / map.tsize) - 1;
-    var endCol = startCol + (this.camera.width / map.tsize) + 1;
+    var endCol = startCol + (this.camera.width / map.tsize) + 2;
     var startRow = Math.floor(this.camera.y / map.tsize) - 1;
-    var endRow = startRow + (this.camera.height / map.tsize) + 1;
+    var endRow = startRow + (this.camera.height / map.tsize) + 2;
     var offsetX = -this.camera.x + startCol * map.tsize;
     var offsetY = -this.camera.y + startRow * map.tsize;
 
@@ -304,12 +320,18 @@ Game._drawLayer = function (layer) {
             var x = (c - startCol) * map.tsize + offsetX;
             var y = (r - startRow) * map.tsize + offsetY;
             if (quiz !== null && quiz !== undefined) {
-                quiz.draw(this.ctx, x, y)
+                var img = this.gryka.image
+                if (quiz.getImg() == 2)
+                 img = this.wiki.image
+                this.ctx.drawImage(
+                    img, // image
+                    Math.round(x),  // target x
+                    Math.round(y)
+                );
             }
         }
     }
 };
-
 
 Game.render = function () {
     // draw map background layer
@@ -322,6 +344,12 @@ Game.render = function () {
         this.hero.image,
         this.hero.screenX - this.hero.width / 2,
         this.hero.screenY - this.hero.height / 2);
+
+    this.ctx.drawImage(
+        this.gryka.image,
+        this.gryka.x * map.tsize,
+        this.gryka.y * map.tsize,
+    )
 
     this._drawLayer(2);
     // draw map top layer
