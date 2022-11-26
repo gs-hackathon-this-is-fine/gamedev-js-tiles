@@ -14,5 +14,5 @@ let quiz = `
     <input type="radio" id="4" value="4" name="ans">
     <label for="4">\(\forall_{x \in \mathbb R} x^2 \geq 0\)</label><br>
 
-    <button type="submit">Zatwierdź</button>
+    <button type="submit" id="send">Zatwierdź</button>
 </form>`

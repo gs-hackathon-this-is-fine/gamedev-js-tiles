@@ -82,7 +82,7 @@ var Mouse = {};
 Mouse._position = null;
 
 
-Mouse.listenForEvents = function () {
+Mouse.listenForEvents = function (hero) {
     document.getElementById("demo").addEventListener('mousedown', this._mouseDown.bind(this));
     document.getElementById("demo").addEventListener('mouseup', this._mouseUp.bind(this));
     document.getElementById("demo").addEventListener('mousemove', this._mouseDrag.bind(this));
