@@ -1,7 +1,11 @@
 
 class Quiz {
-    constructor(text, map) {
+    constructor(text, img) {
         this.text = text
+        this.img = img
+    }
+    getImg() {
+        return this.img;
     }
     start() {
         if (this.started)
@@ -20,6 +24,7 @@ class Quiz {
     }
 
 }
+
 
 function Texture(x, y) {
     this.x = x;
@@ -80,7 +85,7 @@ var map = {
             this.isQuiz = true;
         }
     },
-    quizes: {"31,32": new Quiz(quizes[0])},
+    quizes: {"25,21": new Quiz(registration, 2),"31,32": new Quiz(quizes[0], 1), "12,34": new Quiz(quizes[1], 1),"27,12": new Quiz(quizes[2], 1),"15,11": new Quiz(quizes[3], 1)},
     isSolidTileAtXY: function (x, y) {
         var col = Math.floor(x / this.tsize);
         var row = Math.floor(y / this.tsize);
@@ -315,8 +320,11 @@ Game._drawLayer = function (layer) {
             var x = (c - startCol) * map.tsize + offsetX;
             var y = (r - startRow) * map.tsize + offsetY;
             if (quiz !== null && quiz !== undefined) {
+                var img = this.gryka.image
+                if (quiz.getImg() == 2)
+                 img = this.wiki.image
                 this.ctx.drawImage(
-                    this.gryka.image, // image
+                    img, // image
                     Math.round(x),  // target x
                     Math.round(y)
                 );
