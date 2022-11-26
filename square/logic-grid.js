@@ -1,17 +1,23 @@
 
 class Quiz {
-    constructor(text) {
+    constructor(text, map) {
         this.text = text
     }
     start() {
+        if (this.started)
+            return
+        this.started = true
         var obj = document.createElement("div")
         obj.id = 'quiz'
         obj.innerHTML = this.text
         document.body.appendChild(obj)
+        document.getElementById("send").addEventListener("click", this.end.bind(this))
     }
     end() {
-
-    }common
+        this.started = false
+        document.body.removeChild(document.getElementById("quiz"))
+        window.map.isQuiz = false;
+    }
     draw(ctx, x, y) {
         ctx.fillRect(x,y,100,100)
     }
@@ -53,12 +59,14 @@ var map = {
     rows: 100,
     tsize: 48,
     layers: [layer0, layer1],
+    isQuiz: false,
     getTile: function (layer, col, row) {
         return this.layers[layer][row * map.cols + col];
     },
-    trystartingQuiz(x, y) {
-        if (((x / this.tsize) + ',' +  (y / this.tsize)) in quests) {
-            this.quests[((x / this.tsize) + ',' +  (y / this.tsize))].start(x, y)
+    trystartingQuiz(x, y, hero) {
+        if (((Math.floor(x / this.tsize)) + ',' +  (Math.floor(y / this.tsize))) in this.quizes && Math.abs(x - hero.x) < hero.width &&  Math.abs(y - hero.y) < hero.height) {
+            this.quizes[((Math.floor(x / this.tsize)) + ',' +  (Math.floor(y / this.tsize)))].start()
+            this.isQuiz = true;
         }
     },
     quizes: {"32,32": new Quiz(quiz)},
@@ -88,7 +96,7 @@ var map = {
         return row * this.tsize;
     },
     getQuizAt: function (column, row) {
-        // return this.quizes[column +',' + row];
+        return this.quizes[column +',' + row];
     }
 };
 
@@ -207,7 +215,6 @@ Game.load = function () {
 };
 
 Game.init = function () {
-    Mouse.listenForEvents()
     Keyboard.listenForEvents(
         [Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN]);
     this.tileAtlas = Loader.getImage('tiles');
@@ -215,14 +222,21 @@ Game.init = function () {
     this.hero = new Hero(map, 1840, 1840);
     this.camera = new Camera(map, 1024, 1024);
     this.camera.follow(this.hero);
+    Mouse.listenForEvents()
 };
 
 Game.update = function (delta) {
-    // handle hero movement with arrow keys
+    if (Mouse._position != null) {
+        this.hero.map.trystartingQuiz(this.camera.x  + Mouse._position.x, this.camera.y + Mouse._position.y, this.hero)
+        if (this.hero.map.isQuiz)
+            Mouse._position = null
+    }
+   // handle hero movement with arrow keys
     var dirx = 0;
     var diry = 0;
     var offset = Mouse.getOffset(this.hero.screenX, this.hero.screenY )
-    if (offset == null || (Math.abs(offset.x) < this.hero.width / 4 && Math.abs(offset.y) < this.hero.height / 4)) {
+    console.log(this.hero.map.isQuiz)
+    if (this.hero.map.isQuiz || offset == null || (Math.abs(offset.x) < this.hero.width / 4 && Math.abs(offset.y) < this.hero.height / 4)) {
         this.camera.update();
         return
     }
@@ -233,9 +247,9 @@ Game.update = function (delta) {
 };
 
 Game._drawLayer = function (layer) {
-    var startCol = Math.floor(this.camera.x / map.tsize);
+    var startCol = Math.floor(this.camera.x / map.tsize) - 1;
     var endCol = startCol + (this.camera.width / map.tsize) + 1;
-    var startRow = Math.floor(this.camera.y / map.tsize);
+    var startRow = Math.floor(this.camera.y / map.tsize) - 1;
     var endRow = startRow + (this.camera.height / map.tsize) + 1;
     var offsetX = -this.camera.x + startCol * map.tsize;
     var offsetY = -this.camera.y + startRow * map.tsize;
