@@ -1,10 +1,17 @@
-class Quiz {
-    start() {
 
+class Quiz {
+    constructor(text) {
+        this.text = text
+    }
+    start() {
+        var obj = document.createElement("div")
+        obj.id = 'quiz'
+        obj.innerHTML = this.text
+        document.body.appendChild(obj)
     }
     end() {
 
-    }
+    }common
     draw(ctx, x, y) {
         ctx.fillRect(x,y,100,100)
     }
@@ -50,10 +57,11 @@ var map = {
         return this.layers[layer][row * map.cols + col];
     },
     trystartingQuiz(x, y) {
-        if ((x / this.tsize, y / this.tsize) in quests) {
-            this.quests[(x / this.tsize, y / this.tsize)].start(x, y)
+        if (((x / this.tsize) + ',' +  (y / this.tsize)) in quests) {
+            this.quests[((x / this.tsize) + ',' +  (y / this.tsize))].start(x, y)
         }
     },
+    quizes: {"32,32": new Quiz(quiz)},
     isSolidTileAtXY: function (x, y) {
         var col = Math.floor(x / this.tsize);
         var row = Math.floor(y / this.tsize);
@@ -226,9 +234,9 @@ Game.update = function (delta) {
 
 Game._drawLayer = function (layer) {
     var startCol = Math.floor(this.camera.x / map.tsize);
-    var endCol = startCol + (this.camera.width / map.tsize);
+    var endCol = startCol + (this.camera.width / map.tsize) + 1;
     var startRow = Math.floor(this.camera.y / map.tsize);
-    var endRow = startRow + (this.camera.height / map.tsize);
+    var endRow = startRow + (this.camera.height / map.tsize) + 1;
     var offsetX = -this.camera.x + startCol * map.tsize;
     var offsetY = -this.camera.y + startRow * map.tsize;
 
