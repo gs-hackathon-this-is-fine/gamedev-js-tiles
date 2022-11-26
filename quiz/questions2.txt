@@ -1,0 +1,18 @@
+int x = 54;
+
+void f() {
+    if (101 <= x) {
+        x -= 10;
+    }
+    else {
+        x += 11;
+        f();
+        f();
+    }
+}
+
+int main() {
+    f();
+    printf("%d", x);
+    return 0;
+}
