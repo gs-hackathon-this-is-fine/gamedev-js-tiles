@@ -49,7 +49,7 @@ for i in range(len(questions)):
     """
 
     html += """
-    <button type="submit">Zatwierdź</button>
+    <button type="submit" id="send">Zatwierdź</button>
 </form>"""
     htmls += [html]
 
