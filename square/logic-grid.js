@@ -80,7 +80,7 @@ var map = {
         return row * this.tsize;
     },
     getQuizAt: function (column, row) {
-        return this.quizes[column +',' + row];
+        // return this.quizes[column +',' + row];
     }
 };
 
@@ -194,7 +194,7 @@ Game.load = function () {
     return [
         Loader.loadImage('_tiles', '../assets/tiles.png'),
         Loader.loadImage('tiles', '../assets/Modern_Office_Revamped/3_Modern_Office_Shadowless/Modern_Office_Shadowless_48x48.png'),
-        Loader.loadImage('hero', '../assets/character.png')
+        Loader.loadImage('hero', '../assets/intern1.png')
     ];
 };
 
