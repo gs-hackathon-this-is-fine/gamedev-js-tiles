@@ -49,7 +49,7 @@ for i in range(len(questions)):
     """
 
     html += """
-    <button type="submit" id="send">Zatwierdź</button>
+    <button type="submit" id="send">Submit</button>
 </form>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async
