@@ -44,13 +44,12 @@ for i in range(len(questions)):
     for j in range(len(ans)):
         (b, a) = ans[j]
         html += f"""
-    <input type="radio" id="{j}" value="{j}" name="ans">
+    <input type="radio" id="{j}" value="{1 if b else 0}" name="ans">
     <label for="1">{a}</label><br>
     """
 
     html += """
     <button type="submit" id="send">Submit</button>
-</form>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
